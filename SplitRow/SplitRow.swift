@@ -120,7 +120,11 @@ open class _SplitRow<L: RowType, R: RowType>: Row<SplitRowCell<L,R>> where L: Ba
 	open func subscribe<T: RowType>(onChange row: T) where T: BaseRow{
 		row.onChange{ [weak self] row in
 			guard let strongSelf = self, let rowTagString = row.tag, let rowTag = SplitRowTag(rawValue: rowTagString) else{ return }
-			strongSelf.cell?.update()  //TODO: This should only be done on cells which need an update. e.g. PushRow etc.
+            
+            // FIXED: 日本語入力できない不具合対応
+            if type(of: row) != TextRow.self {
+                strongSelf.cell?.update()  //TODO: This should only be done on cells which need an update. e.g. PushRow etc.
+            }
 			
 			var value = SplitRowValue<L.Cell.Value,R.Cell.Value>()
 			if rowTag == .left {
